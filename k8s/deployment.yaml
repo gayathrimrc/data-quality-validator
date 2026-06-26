@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-quality-validator
+  labels:
+    app: data-quality-validator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-quality-validator
+  template:
+    metadata:
+      labels:
+        app: data-quality-validator
+    spec:
+      containers:
+        - name: data-quality-validator
+          image: ghcr.io/YOUR_ORG/data-quality-validator:latest
+          imagePullPolicy: Always
+          env:
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: dqv-config
+                  key: environment
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/data
+      volumes:
+        - name: data-volume
+          emptyDir: {}
